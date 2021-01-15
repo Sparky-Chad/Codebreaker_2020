@@ -1,0 +1,456 @@
+options:
+  parameters:
+    author: ''
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: BPSKDECODER
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Bpsk Decoding
+    window_size: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: bpsk
+  id: variable_constellation
+  parameters:
+    comment: ''
+    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
+    dims: '1'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 3, 2]'
+    type: bpsk
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [280, 6]
+    rotation: 0
+    state: true
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '32000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: variable_0
+  id: variable
+  parameters:
+    comment: ''
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [909, 348]
+    rotation: 0
+    state: true
+- name: analog_const_source_x_0
+  id: analog_const_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [13, 398]
+    rotation: 0
+    state: true
+- name: blocks_file_source_0
+  id: blocks_file_source
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: /home/lapech/Desktop/CodeBreaker/6_Task/signal.rf32
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    repeat: 'False'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [17, 116]
+    rotation: 0
+    state: true
+- name: blocks_float_to_complex_0
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [156, 264]
+    rotation: 0
+    state: true
+- name: blocks_pack_k_bits_bb_0
+  id: blocks_pack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '7'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [805, 401]
+    rotation: 0
+    state: true
+- name: blocks_pack_k_bits_bb_1
+  id: blocks_pack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '8'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1030, 360]
+    rotation: 0
+    state: true
+- name: blocks_throttle_0
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [122, 544]
+    rotation: 0
+    state: true
+- name: digital_constellation_decoder_cb_0
+  id: digital_constellation_decoder_cb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: bpsk
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [614, 287]
+    rotation: 0
+    state: true
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport numpy as np\n\ndef binary(num, length=8):\n\
+      \        \"\"\"\n        Format an integer to binary without the leading '0b'\n\
+      \        \"\"\"\n        return format(num, '0{}b'.format(length))\n\n\nclass\
+      \ fec_hamming(object):\n    \"\"\"\n    Class responsible for creating hamming\
+      \ block codes and then \n    encoding and decoding. Methods provided include\
+      \ hamm_gen,\n    hamm_encoder(), hamm_decoder().\n    \n    Parameters\n   \
+      \ ----------\n    j: Hamming code order (in terms of parity bits) where n =\
+      \ 2^j-1, \n    k = n-j, and the rate is k/n. \n    \n    Returns\n    -------\n\
+      \    \n    Examples\n    --------\n    \n    Andrew Smit November 2018 \n  \
+      \  \"\"\"\n    \n    def __init__(self,j):\n        self.j = j\n        self.G,\
+      \ self.H, self.R, self.n, self.k = self.hamm_gen(self.j)\n        #log.info('(%d,%d)\
+      \ hamming code object' %(self.n,self.k))\n\n    def hamm_gen(self,j):\n    \
+      \    \"\"\"\n        Generates parity check matrix (H) and generator\n     \
+      \   matrix (G). \n        \n        Parameters\n        ----------\n       \
+      \ j: Number of Hamming code parity bits with n = 2^j-1 and k = n-j\n       \
+      \ \n        returns\n        -------\n        G: Systematic generator matrix\
+      \ with left-side identity matrix\n        H: Systematic parity-check matrix\
+      \ with right-side identity matrix\n        R: k x k identity matrix\n      \
+      \  n: number of total bits/block\n        k: number of source bits/block\n \
+      \       \n        Andrew Smit November 2018\n        \n        \"\"\"\n    \
+      \    if(j < 3):\n            raise ValueError('j must be > 2')\n\n        #\
+      \ calculate codeword length\n        n = 2**j-1\n        \n        # calculate\
+      \ source bit length\n        k = n-j\n        \n        # Allocate memory for\
+      \ Matrices\n        G = np.zeros((k,n),dtype=int)\n        H = np.zeros((j,n),dtype=int)\n\
+      \        P = np.zeros((j,k),dtype=int)\n        R = np.zeros((k,n),dtype=int)\n\
+      \        \n        # Encode parity-check matrix columns with binary 1-n\n  \
+      \      for i in range(1,n+1):\n            b = list(binary(i,j))\n         \
+      \   for m in range(0,len(b)):\n                b[m] = int(b[m])\n          \
+      \  H[:,i-1] = np.array(b)\n\n        # Reformat H to be systematic\n       \
+      \ H1 = np.zeros((1,j),dtype=int)\n        H2 = np.zeros((1,j),dtype=int)\n \
+      \       for i in range(0,j):\n            idx1 = 2**i-1\n            idx2 =\
+      \ n-i-1\n            H1[0,:] = H[:,idx1]\n            H2[0,:] = H[:,idx2]\n\
+      \            H[:,idx1] = H2\n            H[:,idx2] = H1\n        \n        #\
+      \ Get parity matrix from H\n        P = H[:,:k]\n        \n        # Use P to\
+      \ calcuate generator matrix P\n        G[:,:k] = np.diag(np.ones(k))\n     \
+      \   G[:,k:] = P.T\n        \n        # Get k x k identity matrix\n        R[:,:k]\
+      \ = np.diag(np.ones(k))\n\n        return G, H, R, n, k\n    \n    def hamm_encoder(self,x):\n\
+      \        \"\"\"\n        Encodes input bit array x using hamming block code.\n\
+      \        \n        parameters\n        ----------\n        x: array of source\
+      \ bits to be encoded by block encoder.\n        \n        returns\n        -------\n\
+      \        codewords: array of code words generated by generator\n        matrix\
+      \ G and input x.\n        \n        Andrew Smit November 2018\n        \"\"\"\
+      \n        if(np.dtype(x[0]) != int):\n            raise ValueError('Error: Invalid\
+      \ data type. Input must be a vector of ints')\n\n        if(len(x) % self.k\
+      \ or len(x) < self.k):\n            raise ValueError('Error: Invalid input vector\
+      \ length. Length must be a multiple of %d' %self.k)\n\n        N_symbols = int(len(x)/self.k)\n\
+      \        codewords = np.zeros(N_symbols*self.n)\n        x = np.reshape(x,(1,len(x)))\n\
+      \n        for i in range(0,N_symbols):\n            codewords[i*self.n:(i+1)*self.n]\
+      \ = np.matmul(x[:,i*self.k:(i+1)*self.k],self.G)%2\n        return codewords\n\
+      \    \n    def hamm_decoder(self,codewords):\n        \"\"\"\n        Decode\
+      \ hamming encoded codewords. Make sure code words are of\n        the appropriate\
+      \ length for the object.\n        \n        parameters\n        ---------\n\
+      \        codewords: bit array of codewords \n        \n        returns\n   \
+      \     -------\n        decoded_bits: bit array of decoded source bits\n    \
+      \    \n        Andrew Smit November 2018\n        \"\"\"\n        if(np.dtype(codewords[0])\
+      \ != int):\n            raise ValueError('Error: Invalid data type. Input must\
+      \ be a vector of ints')\n\n        if(len(codewords) % self.n or len(codewords)\
+      \ < self.n):\n            raise ValueError('Error: Invalid input vector length.\
+      \ Length must be a multiple of %d' %self.n)\n\n        # Calculate the number\
+      \ of symbols (codewords) in the input array\n        N_symbols = int(len(codewords)/self.n)\n\
+      \        \n        # Allocate memory for decoded sourcebits\n        decoded_bits\
+      \ = np.zeros(N_symbols*self.k)\n        \n        # Loop through codewords to\
+      \ decode one block at a time\n        codewords = np.reshape(codewords,(1,len(codewords)))\n\
+      \        for i in range(0,N_symbols):\n            \n            # find the\
+      \ syndrome of each codeword\n            S = np.matmul(self.H,codewords[:,i*self.n:(i+1)*self.n].T)\
+      \ % 2\n\n            # convert binary syndrome to an integer\n            bits\
+      \ = ''\n            for m in range(0,len(S)):\n                bit = str(int(S[m,:]))\n\
+      \                bits = bits + bit\n            error_pos = int(bits,2)\n  \
+      \          h_pos = self.H[:,error_pos-1]\n            \n            # Use the\
+      \ syndrome to find the position of an error within the block\n            bits\
+      \ = ''\n            for m in range(0,len(S)):\n                bit = str(int(h_pos[m]))\n\
+      \                bits = bits + bit\n            decoded_pos = int(bits,2)-1\n\
+      \n            # correct error if present\n            if(error_pos):\n     \
+      \           codewords[:,i*self.n+decoded_pos] = (codewords[:,i*self.n+decoded_pos]\
+      \ + 1) % 2\n                \n            # Decode the corrected codeword\n\
+      \            decoded_bits[i*self.k:(i+1)*self.k] = np.matmul(self.R,codewords[:,i*self.n:(i+1)*self.n].T).T\
+      \ % 2\n        return decoded_bits.astype(np.byte)\n\n# Create a possible series\
+      \ of matrices that could be utilized by the program\nham_74 = np.array([ [1,1,0,1,1,0,0],\n\
+      \                    [1,0,1,1,0,1,0],\n                    [0,1,1,1,0,0,1] ])\n\
+      \                    \n# Class which can utilize a reversed hamming code class\n\
+      class rev_ham(fec_hamming):\n\n    # This will have parity checks at the end\
+      \ of the matrix by default. This will allow for hamming codes to be written\
+      \ in either way\n    def __init__(self, j):\n        super().__init__(j)\n \
+      \       n = 2**j-1\n        k = n-j\n        self.n, self.k, self.j = n,k,j\n\
+      \        # Create R which is reversed in a way to enable the message to go through\n\
+      \        self.R = np.zeros((self.k, self.n), dtype=int)\n        self.R[:,self.n-self.k:]\
+      \ = np.diag(np.ones(self.k))\n\n        # Create H again\n        H1 = np.zeros((self.j,\
+      \ self.n),dtype=int)\n\n        H1[:,:self.j] = self.H[:,self.k:]\n        H1[:,self.j:]\
+      \ = self.H[:,:self.k]\n        self.H = H1\n\nclass blk(gr.sync_block):  # other\
+      \ base classes are basic_block, decim_block, interp_block\n    \"\"\"Embedded\
+      \ Python Block example - a simple multiply const\"\"\"\n\n    def __init__(self):\
+      \  # only default arguments here\n        \"\"\"arguments to this function show\
+      \ up as parameters in GRC\"\"\"\n        gr.sync_block.__init__(\n         \
+      \   self,\n            name='Embedded Python Block',   # will show up in GRC\n\
+      \            in_sig=[np.byte],\n            out_sig=[np.byte]\n        )\n \
+      \       \n        # Create hamming code data\n        self.ham = fec_hamming(3)\n\
+      \        self.ham.H = ham_74\n        \n\n    def work(self, input_items, output_items):\n\
+      \        \"\"\"\n        Set up system to utilize hamming codes. Tak input items,\
+      \ and convert to\n        seven bit int array which can be decoded and returned\
+      \ as a list\n        \"\"\"\n        \n        current = self.decode((np.unpackbits(np.array(np.uint8(input_items[0][3])))))\n\
+      \        \n        # current will contain 4 bits and must aftr this be packed\
+      \ with a second\n        # char to fully represent a true byte\n        \n \
+      \       if sum(current) == 0:\n            return 0\n        \n        for i\
+      \ in range(0, len(current)):\n            output_items[0][i] = current[i]\n\
+      \        \n        return len(output_items[0])   \n        \n    \"\"\"\n  \
+      \  This method will implement the inputed data, then turning it into decoded\n\
+      \    data. Will take series of 7 bits and import that to the rest of the program.\n\
+      \    \"\"\"\n    def decode(self, codewords):\n        #print(codewords)\n \
+      \       coding = np.array(codewords[1:], dtype=int)\n        #for i in range(7):\n\
+      \         #   coding[i] = int(codewords[i+1])\n        current = self.ham.hamm_decoder(coding).tolist()\
+      \      \n        #print(current)\n        return current\n    \n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Embedded Python Block', 'blk', [], [('0', 'byte', 1)], [('0', 'byte',
+      1)], 'Embedded Python Block example - a simple multiply const', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [850, 176]
+    rotation: 0
+    state: true
+- name: qtgui_const_sink_x_0
+  id: qtgui_const_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    axislabels: 'True'
+    color1: '"blue"'
+    color10: '"red"'
+    color2: '"red"'
+    color3: '"red"'
+    color4: '"red"'
+    color5: '"red"'
+    color6: '"red"'
+    color7: '"red"'
+    color8: '"red"'
+    color9: '"red"'
+    comment: ''
+    grid: 'False'
+    gui_hint: ''
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    marker1: '0'
+    marker10: '0'
+    marker2: '0'
+    marker3: '0'
+    marker4: '0'
+    marker5: '0'
+    marker6: '0'
+    marker7: '0'
+    marker8: '0'
+    marker9: '0'
+    name: '""'
+    nconnections: '1'
+    size: '250'
+    style1: '0'
+    style10: '0'
+    style2: '0'
+    style3: '0'
+    style4: '0'
+    style5: '0'
+    style6: '0'
+    style7: '0'
+    style8: '0'
+    style9: '0'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '2'
+    xmin: '-2'
+    ymax: '2'
+    ymin: '-2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [586, 502]
+    rotation: 0
+    state: true
+- name: video_sdl_sink_0
+  id: video_sdl_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display_height: '480'
+    display_width: '720'
+    fps: '0'
+    height: '480'
+    num_channels: '1'
+    type: byte
+    width: '720'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1222, 173]
+    rotation: 0
+    state: true
+
+connections:
+- [analog_const_source_x_0, '0', blocks_float_to_complex_0, '1']
+- [blocks_file_source_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_float_to_complex_0, '0', blocks_throttle_0, '0']
+- [blocks_pack_k_bits_bb_0, '0', epy_block_0, '0']
+- [blocks_pack_k_bits_bb_1, '0', video_sdl_sink_0, '0']
+- [blocks_throttle_0, '0', digital_constellation_decoder_cb_0, '0']
+- [blocks_throttle_0, '0', qtgui_const_sink_x_0, '0']
+- [digital_constellation_decoder_cb_0, '0', blocks_pack_k_bits_bb_0, '0']
+- [epy_block_0, '0', blocks_pack_k_bits_bb_1, '0']
+
+metadata:
+  file_format: 1

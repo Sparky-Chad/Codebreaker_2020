@@ -1,0 +1,29 @@
+n = 1
+First the van went to the east one block and waited until the lights went green at t = 30
+
+n = 2
+For 30 < t < 60 the van travels in what seems to be a straight line for 2 blocks as the spead does not slow down through the section.
+
+n = 1
+For 60 < t < 90 the van travels for only 1 block rather than for any more than that. So it might travel up or down on the first part and assuming that it does travel away this would conclude that the prior one went straight.
+
+n = 2
+For 90 < t < 120 the van travels for one block which confirms the prior that it did in fact go up and not down.
+
+n = 1
+For 120 < t < 150 the van travels for only one block.
+
+n = 2
+For 150 < t < 180 the van travels for 1 block, makes a turn, and then continues on for 2 blocks just getting through the final light.
+
+n = 1
+For 180 < t < 210 the van continues straight for two blocks then stops.
+
+Possible values
+Q 13 - Low 
+P 11 - CORRECT
+
+Is not
+O 12
+O 11
+
